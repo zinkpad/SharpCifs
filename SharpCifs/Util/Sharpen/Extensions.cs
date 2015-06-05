@@ -69,11 +69,6 @@ namespace SharpCifs.Util.Sharpen
             return sb.ToString().IndexOf(str);
         }
 
-        public static Iterable<T> AsIterable<T>(this IEnumerable<T> s)
-        {
-            return new EnumerableWrapper<T>(s);
-        }
-
         public static int BitCount(int val)
         {
             uint num = (uint)val;
@@ -263,7 +258,7 @@ namespace SharpCifs.Util.Sharpen
         public static Iterator<T> Iterator<T>(this IEnumerable<T> col)
         {
             return new EnumeratorWrapper<T>(col, col.GetEnumerator());
-        }
+        } 
 
         public static T Last<T>(this ICollection<T> col)
         {
@@ -273,11 +268,6 @@ namespace SharpCifs.Util.Sharpen
                 return list[list.Count - 1];
             }
             return col.Last();
-        }
-
-        public static ListIterator<T> ListIterator<T>(this IList<T> col, int n)
-        {
-            return new ListIterator<T>(col, n);
         }
 
         public static int LowestOneBit(int val)

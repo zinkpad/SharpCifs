@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using SharpCifs.Netbios;
@@ -53,26 +54,25 @@ namespace SharpCifs.Smb
             lock (typeof(SmbTransport))
             {
                 SmbTransport conn;
+
                 lock (SmbConstants.Connections)
                 {
                     if (SmbConstants.SsnLimit != 1)
                     {
+                        conn =
+                            SmbConstants.Connections.FirstOrDefault(
+                                c =>
+                                    c.Matches(address, port, localAddr, localPort, hostName) &&
+                                    (SmbConstants.SsnLimit ==
+                                     0 || c.Sessions.Count < SmbConstants.SsnLimit));
 
-                        ListIterator<SmbTransport> iter = new ListIterator<SmbTransport>(SmbConstants.Connections, 0);
-
-                        //                        iter = new Iterator<SmbTransport>();
-
-                        while (iter.HasNext())
+                        if (conn != null)
                         {
-                            conn = (SmbTransport)iter.Next();
-                            if (conn.Matches(address, port, localAddr, localPort, hostName) && (SmbConstants.SsnLimit ==
-                                0 || conn.Sessions.Count < SmbConstants.SsnLimit))
-                            {
-                                return conn;
-                            }
+                            return conn;
                         }
 
                     }
+
                     conn = new SmbTransport(address, port, localAddr, localPort);
                     SmbConstants.Connections.Insert(0, conn);
                 }
@@ -154,7 +154,7 @@ namespace SharpCifs.Smb
 
         internal SigningDigest Digest;
 
-        internal List<object> Sessions = new List<object>();
+        internal List<SmbSession> Sessions = new List<SmbSession>();
 
         internal ServerData Server;
 
@@ -198,27 +198,21 @@ namespace SharpCifs.Smb
             {
                 SmbSession ssn;
                 long now;
-                ListIterator<object> iter = new ListIterator<object>(Sessions.ToArray(), 0);//sessions.ListIterator();
-                while (iter.HasNext())
+
+                ssn = Sessions.FirstOrDefault(s => s.Matches(auth));
+                if (ssn != null)
                 {
-                    ssn = (SmbSession)iter.Next();
-                    if (ssn.Matches(auth))
-                    {
-                        ssn.Auth = auth;
-                        return ssn;
-                    }
+                    ssn.Auth = auth;
+                    return ssn;
                 }
+
                 if (SmbConstants.SoTimeout > 0 && SessionExpiration < (now = Runtime.CurrentTimeMillis()))
                 {
                     SessionExpiration = now + SmbConstants.SoTimeout;
-                    iter = new ListIterator<object>(Sessions.ToArray(), 0);//sessions.ListIterator();
-                    while (iter.HasNext())
+
+                    foreach (var session in Sessions.Where(s => s.Expiration < now))
                     {
-                        ssn = (SmbSession)iter.Next();
-                        if (ssn.Expiration < now)
-                        {
-                            ssn.Logoff(false);
-                        }
+                        session.Logoff(false);
                     }
                 }
                 ssn = new SmbSession(Address, Port, LocalAddr, LocalPort, auth);
@@ -484,14 +478,13 @@ namespace SharpCifs.Smb
         /// <exception cref="System.IO.IOException"></exception>
         protected internal override void DoDisconnect(bool hard)
         {
-            ListIterator<object> iter = new ListIterator<object>(Sessions.ToArray(), 0);//sessions.ListIterator();
             try
             {
-                while (iter.HasNext())
+                foreach (var ssn in Sessions)
                 {
-                    SmbSession ssn = (SmbSession)iter.Next();
                     ssn.Logoff(hard);
                 }
+
                 Out.Close();
                 In.Close();
                 Socket.Close();
@@ -502,6 +495,7 @@ namespace SharpCifs.Smb
                 Socket = null;
                 TconHostName = null;
             }
+
         }
 
         /// <exception cref="System.IO.IOException"></exception>

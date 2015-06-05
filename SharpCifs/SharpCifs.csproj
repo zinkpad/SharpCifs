@@ -246,10 +246,7 @@
     <Compile Include="Util\LogStream.cs" />
     <Compile Include="Util\MD4.cs" />
     <Compile Include="Util\RC4.cs" />
-    <Compile Include="Util\Sharpen\AbstractCollection.cs" />
-    <Compile Include="Util\Sharpen\AbstractList.cs" />
     <Compile Include="Util\Sharpen\AbstractMap.cs" />
-    <Compile Include="Util\Sharpen\AbstractSet.cs" />
     <Compile Include="Util\Sharpen\Arrays.cs" />
     <Compile Include="Util\Sharpen\BufferedReader.cs" />
     <Compile Include="Util\Sharpen\BufferedWriter.cs" />
@@ -257,9 +254,7 @@
     <Compile Include="Util\Sharpen\CharSequence.cs" />
     <Compile Include="Util\Sharpen\Collections.cs" />
     <Compile Include="Util\Sharpen\ConcurrentHashMap.cs" />
-    <Compile Include="Util\Sharpen\CopyOnWriteArrayList.cs" />
     <Compile Include="Util\Sharpen\DateFormat.cs" />
-    <Compile Include="Util\Sharpen\EnumerableWrapper.cs" />
     <Compile Include="Util\Sharpen\EnumeratorWrapper.cs" />
     <Compile Include="Util\Sharpen\Exceptions.cs" />
     <Compile Include="Util\Sharpen\Extensions.cs" />
@@ -281,10 +276,8 @@
     <Compile Include="Util\Sharpen\InputStreamReader.cs" />
     <Compile Include="Util\Sharpen\IPrivilegedAction.cs" />
     <Compile Include="Util\Sharpen\IRunnable.cs" />
-    <Compile Include="Util\Sharpen\Iterable.cs" />
     <Compile Include="Util\Sharpen\Iterator.cs" />
     <Compile Include="Util\Sharpen\LinkageError.cs" />
-    <Compile Include="Util\Sharpen\ListIterator.cs" />
     <Compile Include="Util\Sharpen\Matcher.cs" />
     <Compile Include="Util\Sharpen\MD5.cs" />
     <Compile Include="Util\Sharpen\MD5Managed.cs" />
