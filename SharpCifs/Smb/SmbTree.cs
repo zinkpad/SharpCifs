@@ -132,8 +132,7 @@ namespace SharpCifs.Smb
 					}
 				}
 				request.Tid = Tid;
-				if (InDfs && !Service.Equals("IPC") && request.Path != null && request.Path.Length
-					 > 0)
+				if (InDfs && !Service.Equals("IPC") && !string.IsNullOrEmpty(request.Path))
 				{
                     request.Flags2 = SmbConstants.Flags2ResolvePathsInDfs;
 					request.Path = '\\' + Session.Transport().TconHostName + '\\' + Share + request.Path;

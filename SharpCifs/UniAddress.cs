@@ -76,7 +76,7 @@ namespace SharpCifs
 			catch (UnknownHostException)
 			{
 			}
-			if (ro == null || ro.Length == 0)
+			if (string.IsNullOrEmpty(ro))
 			{
 				if (nbns == null)
 				{
@@ -322,7 +322,7 @@ namespace SharpCifs
 		{
 			object addr;
 			int i;
-			if (hostname == null || hostname.Length == 0)
+			if (string.IsNullOrEmpty(hostname))
 			{
 				throw new UnknownHostException();
 			}

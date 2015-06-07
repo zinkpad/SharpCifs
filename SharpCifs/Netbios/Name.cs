@@ -53,7 +53,7 @@ namespace SharpCifs.Netbios
 			}
 			this.name = name.ToUpper();
 			this.HexCode = hexCode;
-			this.Scope = scope != null && scope.Length > 0 ? scope : DefaultScope;
+			this.Scope = !string.IsNullOrEmpty(scope) ? scope : DefaultScope;
 			SrcHashCode = 0;
 		}
 

@@ -192,7 +192,7 @@ namespace SharpCifs.Netbios
 				}
 			}
 			localHostname = Config.GetProperty("jcifs.netbios.hostname", null);
-			if (localHostname == null || localHostname.Length == 0)
+			if (string.IsNullOrEmpty(localHostname))
 			{
 				byte[] addr = localInetAddress.GetAddressBytes();
 				
@@ -437,7 +437,7 @@ namespace SharpCifs.Netbios
 		public static NbtAddress GetByName(string host, int type, string scope, IPAddress
 			 svr)
 		{
-			if (host == null || host.Length == 0)
+			if (string.IsNullOrEmpty(host))
 			{
 				return GetLocalHost();
 			}

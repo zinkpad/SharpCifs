@@ -16,12 +16,7 @@ namespace SharpCifs.Util.Sharpen
 			if (a1.Length != a2.Length) {
 				return false;
 			}
-			for (int i = 0; i < a1.Length; i++) {
-				if (!a1[i].Equals (a2[i])) {
-					return false;
-				}
-			}
-			return true;
+		    return !a1.Where((t, i) => !t.Equals(a2[i])).Any();
 		}
 
 		public static void Fill<T> (T[] array, T val)

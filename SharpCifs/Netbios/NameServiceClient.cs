@@ -379,7 +379,7 @@ namespace SharpCifs.Netbios
             int n;
             NameQueryRequest request = new NameQueryRequest(name);
             NameQueryResponse response = new NameQueryResponse();
-            request.Addr = addr != null ? addr : NbtAddress.GetWinsAddress();
+            request.Addr = addr ?? NbtAddress.GetWinsAddress();
             request.IsBroadcast = request.Addr == null;
             if (request.IsBroadcast)
             {

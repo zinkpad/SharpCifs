@@ -132,7 +132,7 @@ namespace SharpCifs.Ntlmssp
 				int flags = GetFlags();
 				bool hostInfo = false;
 				byte[] domain = new byte[0];
-				if (suppliedDomain != null && suppliedDomain.Length != 0)
+				if (!string.IsNullOrEmpty(suppliedDomain))
 				{
 					hostInfo = true;
 					flags |= NtlmsspNegotiateOemDomainSupplied;
@@ -144,7 +144,7 @@ namespace SharpCifs.Ntlmssp
 					flags &= (NtlmsspNegotiateOemDomainSupplied ^ unchecked((int)(0xffffffff)));
 				}
 				byte[] workstation = new byte[0];
-				if (suppliedWorkstation != null && suppliedWorkstation.Length != 0)
+				if (!string.IsNullOrEmpty(suppliedWorkstation))
 				{
 					hostInfo = true;
 					flags |= NtlmsspNegotiateOemWorkstationSupplied;
@@ -178,8 +178,8 @@ namespace SharpCifs.Ntlmssp
 		{
 			string suppliedDomain = GetSuppliedDomain();
 			string suppliedWorkstation = GetSuppliedWorkstation();
-			return "Type1Message[suppliedDomain=" + (suppliedDomain == null ? "null" : suppliedDomain
-				) + ",suppliedWorkstation=" + (suppliedWorkstation == null ? "null" : suppliedWorkstation
+			return "Type1Message[suppliedDomain=" + (suppliedDomain ?? "null"
+				) + ",suppliedWorkstation=" + (suppliedWorkstation ?? "null"
 				) + ",flags=0x" + Hexdump.ToHexString(GetFlags(), 8) + "]";
 		}
 

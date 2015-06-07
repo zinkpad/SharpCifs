@@ -424,7 +424,7 @@ namespace SharpCifs.Ntlmssp
 				string oem = unicode ? null : GetOemEncoding();
 				string domainName = GetDomain();
 				byte[] domain = null;
-				if (domainName != null && domainName.Length != 0)
+				if (!string.IsNullOrEmpty(domainName))
 				{
 					domain = unicode ? Runtime.GetBytesForString(domainName, UniEncoding) : 
 						Runtime.GetBytesForString(domainName, oem);
@@ -432,7 +432,7 @@ namespace SharpCifs.Ntlmssp
 				int domainLength = (domain != null) ? domain.Length : 0;
 				string userName = GetUser();
 				byte[] user = null;
-				if (userName != null && userName.Length != 0)
+				if (!string.IsNullOrEmpty(userName))
 				{
 					user = unicode ? Runtime.GetBytesForString(userName, UniEncoding) : Runtime.GetBytesForString
 						(userName.ToUpper(), oem);
@@ -440,7 +440,7 @@ namespace SharpCifs.Ntlmssp
 				int userLength = (user != null) ? user.Length : 0;
 				string workstationName = GetWorkstation();
 				byte[] workstation = null;
-				if (workstationName != null && workstationName.Length != 0)
+				if (!string.IsNullOrEmpty(workstationName))
 				{
 					workstation = unicode ? Runtime.GetBytesForString(workstationName, UniEncoding
 						) : Runtime.GetBytesForString(workstationName.ToUpper(), oem);

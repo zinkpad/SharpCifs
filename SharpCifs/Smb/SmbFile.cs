@@ -762,7 +762,7 @@ namespace SharpCifs.Smb
         /// <param name="auth">The credentials the client should use for authentication</param>
         public SmbFile(Uri url, NtlmPasswordAuthentication auth)
         {
-            this.Auth = auth == null ? new NtlmPasswordAuthentication(url.GetUserInfo()) : auth;
+            this.Auth = auth ?? new NtlmPasswordAuthentication(url.GetUserInfo());
             Url = url;
             GetUncPath0();
         }

@@ -252,7 +252,7 @@ namespace SharpCifs.Ntlmssp
 				byte[] target = new byte[0];
 				if ((flags & NtlmsspRequestTarget) != 0)
 				{
-					if (targetName != null && targetName.Length != 0)
+					if (!string.IsNullOrEmpty(targetName))
 					{
 						target = (flags & NtlmsspNegotiateUnicode) != 0 ? Runtime.GetBytesForString
 							(targetName, UniEncoding) : Runtime.GetBytesForString(targetName.ToUpper
@@ -287,7 +287,7 @@ namespace SharpCifs.Ntlmssp
 				WriteULong(type2, 8, 2);
 				WriteSecurityBuffer(type2, 12, data, target);
 				WriteULong(type2, 20, flags);
-				Array.Copy(challenge != null ? challenge : new byte[8], 0, type2, 24, 8);
+				Array.Copy(challenge ?? new byte[8], 0, type2, 24, 8);
 				if (context != null)
 				{
 					Array.Copy(context, 0, type2, 32, 8);

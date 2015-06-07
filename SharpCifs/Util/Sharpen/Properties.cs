@@ -45,7 +45,7 @@ namespace SharpCifs.Util.Sharpen
             return def;*/
             object value = _properties.Get(key);
 
-            return value != null ? value : def;            
+            return value ?? def;            
         }
 
         public void Load(InputStream input)
