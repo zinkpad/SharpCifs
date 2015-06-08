@@ -617,27 +617,31 @@ namespace SharpCifs.Util.Sharpen
             }
             catch (Exception ex)
             {
-                
-            }
-                              
+                return null;
+            }            
+        }
+
+        public static IPAddress[] GetAddressesByName(string host)
+        {
             IReadOnlyList<EndpointPair> data = null;
 
             try
             {
                 Task.Run(async () =>
-                 {
-                     data = await DatagramSocket.GetEndpointPairsAsync(new HostName(host), "0");
-                 }).Wait();
+                {
+                    data = await DatagramSocket.GetEndpointPairsAsync(new HostName(host), "0");
+                }).Wait();
             }
             catch (Exception ex)
             {
-
+                return null;
             }
 
-            return data != null ? IPAddress.Parse(data[0].RemoteHostName.DisplayName) : null;
+            return data != null
+                ? data.Where(i => i.RemoteHostName.Type == HostNameType.Ipv4)
+                    .Select(i => IPAddress.Parse(i.RemoteHostName.DisplayName))
+                    .ToArray() : null;
         }
-
-
 
         public static string GetImplementationVersion(this Assembly asm)
         {

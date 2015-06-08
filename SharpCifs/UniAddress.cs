@@ -16,6 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using SharpCifs.Netbios;
 using SharpCifs.Util;
@@ -415,19 +416,14 @@ namespace SharpCifs
 								throw new UnknownHostException(hostname);
 							}
 
-                            IPAddress[] iaddrs = { Extensions.GetAddressByName(hostname) }; //Dns.GetHostAddresses(hostname);
+                            IPAddress[] iaddrs = Extensions.GetAddressesByName(hostname);
 
-                            if (iaddrs[0] == null)
+                            if (iaddrs == null)
                             {
                                 continue;
                             }
 
-							UniAddress[] addrs = new UniAddress[iaddrs.Length];
-							for (int ii = 0; ii < iaddrs.Length; ii++)
-							{
-								addrs[ii] = new UniAddress(iaddrs[ii]);
-							}
-							return addrs;
+                            return iaddrs.Select(iaddr => new UniAddress(iaddr)).ToArray();                            
 						}
 
 						default:

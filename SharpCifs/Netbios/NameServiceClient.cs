@@ -19,8 +19,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using SharpCifs.Util;
 using SharpCifs.Util.Sharpen;
+using Thread = SharpCifs.Util.Sharpen.Thread;
 
 namespace SharpCifs.Netbios
 {
@@ -83,12 +85,14 @@ namespace SharpCifs.Netbios
         private Hashtable _responseTable = new Hashtable();
 
         private Thread _thread;
-
+        
         private int _nextNameTrnId;
 
         private int[] _resolveOrder;
 
-        private bool _clearResponses;
+        private bool _waitResponse = true;
+
+        private AutoResetEvent _autoResetWaitReceive;
 
         internal IPAddress laddr;
 
@@ -211,9 +215,12 @@ namespace SharpCifs.Netbios
                 _socket = new SocketEx(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 _socket.Bind(new IPEndPoint(laddr.Address, _lport));
 
-                _thread = new Thread(this); //new Sharpen.Thread(this, "JCIFS-NameServiceClient");
-                _thread.SetDaemon(true);
-                _thread.Start();
+                if (_waitResponse)
+                {
+                    _thread = new Thread(this); //new Sharpen.Thread(this, "JCIFS-NameServiceClient");
+                    _thread.SetDaemon(true);
+                    _thread.Start();                    
+                }
             }
         }
 
@@ -228,9 +235,12 @@ namespace SharpCifs.Netbios
                 }
                 _thread = null;
 
-                if (_clearResponses)
+                if (_waitResponse)
                 {
                     _responseTable.Clear();
+                } else
+                {
+                    _autoResetWaitReceive.Set();
                 }
             }
         }
@@ -239,11 +249,14 @@ namespace SharpCifs.Netbios
         {
             int nameTrnId;
             NameServicePacket response;
+
             try
             {
+
                 while (_thread == Thread.CurrentThread())
                 {
                     _socket.SoTimeOut = _closeTimeout;
+
                     int len = _socket.Receive(_rcvBuf, 0, RcvBufSize);
 
                     if (_log.Level > 3)
@@ -276,9 +289,10 @@ namespace SharpCifs.Netbios
                             Runtime.Notify(response);
                         }
                     }
-
                 }
+
             }
+            catch (TimeoutException) { }
             catch (Exception ex)
             {
                 if (_log.Level > 2)
@@ -294,7 +308,7 @@ namespace SharpCifs.Netbios
 
         /// <exception cref="System.IO.IOException"></exception>
         internal virtual void Send(NameServicePacket request, NameServicePacket response,
-            int timeout, bool waitResponse = true)
+            int timeout)
         {
             int nid = 0;
             int max = NbtAddress.Nbns.Length;
@@ -305,7 +319,6 @@ namespace SharpCifs.Netbios
 
             lock (response)
             {
-                _clearResponses = waitResponse;
 
                 while (max-- > 0)
                 {
@@ -327,7 +340,7 @@ namespace SharpCifs.Netbios
                             }
 
                         }
-                        if (waitResponse)
+                        if (_waitResponse)
                         {
                             long start = Runtime.CurrentTimeMillis();
                             while (timeout > 0)
@@ -349,12 +362,12 @@ namespace SharpCifs.Netbios
                     finally
                     {
                         //Sharpen.Collections.Remove(responseTable, nid);
-                        if (waitResponse)
+                        if (_waitResponse)
                         {
                             _responseTable.Remove(nid);
                         }
                     }
-                    if (waitResponse)
+                    if (_waitResponse)
                     {
                         lock (_lock)
                         {
@@ -560,10 +573,12 @@ namespace SharpCifs.Netbios
             throw new UnknownHostException();
         }
 
-        internal virtual NbtAddress[] GetHosts(int wait)
+        internal virtual NbtAddress[] GetHosts()
         {
             try
             {
+                _waitResponse = false;
+
                 byte[] bAddrBytes = laddr.GetAddressBytes();
 
                 for (int i = 1; i <= 254; i++)
@@ -584,7 +599,7 @@ namespace SharpCifs.Netbios
                         (int)addr.Address, false, 0x20));
                     request = new NodeStatusRequest(new Name(NbtAddress.AnyHostsName, unchecked(0x20), null));
                     request.Addr = addr;
-                    Send(request, response, RetryTimeout, false);
+                    Send(request, response, 0);
                 }
 
             }
@@ -596,9 +611,13 @@ namespace SharpCifs.Netbios
                 }
                 throw new UnknownHostException(ioe);
             }
+            
+            _autoResetWaitReceive = new AutoResetEvent(false);
+            _thread = new Thread(this); 
+            _thread.SetDaemon(true);
+            _thread.Start();
 
-
-            Thread.Sleep(wait);
+            _autoResetWaitReceive.WaitOne();         
 
             List<NbtAddress> result = new List<NbtAddress>();
 
@@ -620,27 +639,7 @@ namespace SharpCifs.Netbios
 
             _responseTable.Clear();
 
-            try
-            {
-                lock (_lock)
-                {
-                    if (_socket != null)
-                    {
-                        _socket.Close();
-                        _socket = null;
-                    }
-                    
-                    _thread = null;
-                }
-            }
-            catch (IOException ioe)
-            {
-                if (_log.Level > 1)
-                {
-                    Runtime.PrintStackTrace(ioe, _log);
-                }
-            }
-
+            _waitResponse = true;
 
             return result.Count > 0 ? result.ToArray() : null;
         }

@@ -384,9 +384,9 @@ namespace SharpCifs.Netbios
 			return Localhost;
 		}
 
-	    public static NbtAddress[] GetHosts(int wait)
+	    public static NbtAddress[] GetHosts()
 	    {
-	        return new NameServiceClient().GetHosts(wait);
+	        return new NameServiceClient().GetHosts();
 	    }
 
 		public static Name GetLocalName()
