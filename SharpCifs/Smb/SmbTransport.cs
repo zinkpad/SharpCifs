@@ -268,7 +268,7 @@ namespace SharpCifs.Smb
                     Socket.Bind2(new IPEndPoint(LocalAddr, LocalPort));
                 }
 
-                Socket.Connect(new IPEndPoint(Address.GetHostIpAddress(), 139), SmbConstants.ConnTimeout);
+                Socket.Connect(new IPEndPoint(IPAddress.Parse(Address.GetHostAddress()), 139), SmbConstants.ConnTimeout);
                 Socket.SoTimeOut = SmbConstants.SoTimeout;
 
                 Out = Socket.GetOutputStream();
@@ -812,7 +812,14 @@ namespace SharpCifs.Smb
                             }
                             catch (Exception ie)
                             {
-                                throw new TransportException(ie);
+                                if (ie is SmbException)
+                                {
+                                    throw;
+                                }
+                                else
+                                {
+                                    throw new TransportException(ie);                                    
+                                }
                             }
                             finally
                             {
