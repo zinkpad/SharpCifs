@@ -638,9 +638,9 @@ namespace SharpCifs.Util.Sharpen
             }
 
             return data != null
-                ? data.Where(i => i.RemoteHostName.Type == HostNameType.Ipv4)
-                    .Select(i => IPAddress.Parse(i.RemoteHostName.DisplayName))
-                    .ToArray() : null;
+                ? data.Where(i => i.RemoteHostName.Type == HostNameType.Ipv4).GroupBy(i => i.RemoteHostName.DisplayName)
+                    .Select(i => IPAddress.Parse(i.First().RemoteHostName.DisplayName))
+                    .ToArray() : null; 
         }
 
         public static string GetImplementationVersion(this Assembly asm)

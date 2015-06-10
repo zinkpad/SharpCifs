@@ -418,7 +418,7 @@ namespace SharpCifs
 
                             IPAddress[] iaddrs = Extensions.GetAddressesByName(hostname);
 
-                            if (iaddrs == null)
+                            if (iaddrs == null || iaddrs.Length == 0)
                             {
                                 continue;
                             }
