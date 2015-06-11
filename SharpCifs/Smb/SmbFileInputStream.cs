@@ -280,6 +280,15 @@ namespace SharpCifs.Smb
 				return n;
 			}
 			return 0;
-		}        
+		}
+
+	    /// <summary>
+	    /// Get file length
+	    /// </summary>
+        public override long Length
+	    {
+	        get { return File.Length(); }
+	    }
+        
 	}
 }

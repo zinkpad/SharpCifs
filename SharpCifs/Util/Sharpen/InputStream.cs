@@ -144,6 +144,19 @@ namespace SharpCifs.Util.Sharpen
 			}
 		}
 
+        public virtual long Length
+        {
+            get
+            {
+                if (Wrapped != null)
+                {
+                    return Wrapped.Length;    
+                }
+
+                throw new NotSupportedException();
+            }
+        }
+
 		static internal InputStream Wrap (Stream s)
 		{
 			InputStream stream = new InputStream ();

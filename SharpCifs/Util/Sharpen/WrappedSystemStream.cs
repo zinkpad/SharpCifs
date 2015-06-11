@@ -102,9 +102,7 @@ namespace SharpCifs.Util.Sharpen
 		}
 
 		public override long Length {
-			get {
-				throw new NotSupportedException ();               
-			}
+			get { return _ist.Length; }
 		}
 		
 		internal void OnMark (int nb)
