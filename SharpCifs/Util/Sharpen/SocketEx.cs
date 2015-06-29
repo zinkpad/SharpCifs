@@ -70,11 +70,11 @@ namespace SharpCifs.Util.Sharpen
             if (!autoReset.WaitOne(timeOut))
             {
                 CancelConnectAsync(args);
-                throw new TimeoutException("Can't connect to end point.");
+                throw new ConnectException("Can't connect to end point.");
             }
             if (args.SocketError != SocketError.Success)
             {
-                throw new Exception("Can't connect to end point.");
+                throw new ConnectException("Can't connect to end point.");
             }
         }
 

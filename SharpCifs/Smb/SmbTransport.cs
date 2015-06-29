@@ -229,7 +229,7 @@ namespace SharpCifs.Smb
             {
                 hostName = address.GetHostName();
             }
-            return (TconHostName == null || Runtime.EqualsIgnoreCase(hostName, TconHostName)) && address.Equals(this.Address) && (port == 0 || port == this.Port
+            return (TconHostName == null || Runtime.EqualsIgnoreCase(hostName, TconHostName)) && address.Equals(this.Address) && (port == -1 || port == this.Port
                  || (port == 445 && this.Port == 139)) && (localAddr == this.LocalAddr || (localAddr
                  != null && localAddr.Equals(this.LocalAddr))) && localPort == this.LocalPort;
         }
@@ -348,7 +348,7 @@ namespace SharpCifs.Smb
                 }
                 else
                 {
-                    if (port <= 0)
+                    if (port == -1)
                     {
                         port = SmbConstants.DefaultPort;
                     }
@@ -426,7 +426,7 @@ namespace SharpCifs.Smb
             }
             catch (ConnectException)
             {
-                Port = (Port == 0 || Port == SmbConstants.DefaultPort) ? 139 : SmbConstants.DefaultPort;
+                Port = (Port == -1 || Port == SmbConstants.DefaultPort) ? 139 : SmbConstants.DefaultPort;
                 Negotiate(Port, resp);
             }
             if (resp.DialectIndex > 10)
