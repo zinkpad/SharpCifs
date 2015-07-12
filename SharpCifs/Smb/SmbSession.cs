@@ -170,7 +170,7 @@ namespace SharpCifs.Smb
 		/// <exception cref="SmbException"></exception>
 		public static void Logon(UniAddress dc, NtlmPasswordAuthentication auth)
 		{
-			Logon(dc, 0, auth);
+			Logon(dc, -1, auth);
 		}
 
 		/// <exception cref="SharpCifs.Smb.SmbException"></exception>
